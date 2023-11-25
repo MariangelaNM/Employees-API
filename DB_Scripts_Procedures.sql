@@ -79,3 +79,25 @@ BEGIN
         THROW;
     END CATCH
 END
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Delete a department
+-- =============================================
+CREATE PROCEDURE [dbo].[DeleteDepartment]
+    @DepartmentID INT
+AS
+BEGIN
+    BEGIN TRY
+        -- Delete the department
+        DELETE FROM [dbo].[Departments]
+        WHERE [DepartmentID] = @DepartmentID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
+
+        -- Re-throw the error for further handling
+        THROW;
+    END CATCH
+END
