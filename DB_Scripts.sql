@@ -53,6 +53,22 @@ BEGIN
 END
 GO
 
+-- Create ErrorLog table
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'ErrorLog')
+BEGIN
+    CREATE TABLE [dbo].[ErrorLog](
+    [ErrorID] INT PRIMARY KEY IDENTITY(1,1),
+    [ErrorMessage] NVARCHAR(MAX) NOT NULL,
+    [ErrorTime] DATETIME NOT NULL DEFAULT GETDATE()
+   );
+
+END
+ELSE
+BEGIN
+    PRINT 'ErrorLog table already exists.';
+END
+GO
+
 -- Insert sample data into the employees table
 INSERT INTO Employees (EmployeeName, EmployeeLastName, DepartmentID)
 VALUES
