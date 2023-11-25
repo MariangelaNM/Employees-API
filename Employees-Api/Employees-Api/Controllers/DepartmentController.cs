@@ -24,7 +24,7 @@ namespace Employees_Api.Controllers
       using (SqlConnection connection = new(con))
       {
         connection.Open();
-        using (SqlCommand cmd = new("GetDepartment", connection))
+        using (SqlCommand cmd = new("GetDepartments", connection))
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
           using (SqlDataReader reader = cmd.ExecuteReader())
@@ -52,7 +52,7 @@ namespace Employees_Api.Controllers
       using (SqlConnection connection = new(con))
       {
         connection.Open();
-        using (SqlCommand cmd = new("PostDepartment", connection))
+        using (SqlCommand cmd = new("AddDepartment", connection))
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
           cmd.Parameters.AddWithValue("@DepartmentName", p.DepartmentName);
