@@ -72,7 +72,7 @@ namespace Employees_Api.Controllers
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
           cmd.Parameters.AddWithValue("@DepartmentID", id);
-          cmd.Parameters.AddWithValue("@DepartmentName", p.DepartmentName);
+          cmd.Parameters.AddWithValue("@NewDepartmentName", p.DepartmentName);
           cmd.ExecuteNonQuery();
         }
       }

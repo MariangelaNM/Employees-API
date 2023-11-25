@@ -21,7 +21,7 @@ BEGIN
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
-        INSERT INTO ErrorLog (ErrorMessage, ErrorTime) VALUES (ERROR_MESSAGE(), GETDATE())
+        INSERT INTO ErrorLog (ErrorMessage, ErrorTime) VALUES (ERROR_MESSAGE(), GETDATE());
         THROW;
     END CATCH
 END
@@ -42,7 +42,40 @@ BEGIN
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
-        INSERT INTO ErrorLog (ErrorMessage, ErrorTime) VALUES (ERROR_MESSAGE(), GETDATE())
+        INSERT INTO ErrorLog (ErrorMessage, ErrorTime) VALUES (ERROR_MESSAGE(), GETDATE());
+        THROW;
+    END CATCH
+END
+
+USE [EmployeesDB]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Update department 
+-- =============================================
+CREATE PROCEDURE [dbo].[UpdateDepartment]
+    @DepartmentID INT,
+    @NewDepartmentName VARCHAR(50)
+AS
+BEGIN
+    BEGIN TRY
+        -- Update the department name
+        UPDATE [dbo].[Departments]
+        SET [DepartmentName] = @NewDepartmentName
+        WHERE [DepartmentID] = @DepartmentID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
+
+        -- Re-throw the error for further handling
         THROW;
     END CATCH
 END
