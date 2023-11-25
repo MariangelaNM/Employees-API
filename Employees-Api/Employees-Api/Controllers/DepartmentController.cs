@@ -13,7 +13,6 @@ namespace Employees_Api.Controllers
     public DepartmentController(IConfiguration configuration)
     {
 
-
       con = configuration["ConnectionStrings:conexion"];
     }
 
@@ -53,10 +52,10 @@ namespace Employees_Api.Controllers
       using (SqlConnection connection = new(con))
       {
         connection.Open();
-        using (SqlCommand cmd = new("InsertarProducto", connection))
+        using (SqlCommand cmd = new("PostDepartment", connection))
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
-          cmd.Parameters.AddWithValue("@Nombre", p.DepartmentName);
+          cmd.Parameters.AddWithValue("@DepartmentName", p.DepartmentName);
           cmd.ExecuteNonQuery();
         }
       }
@@ -69,11 +68,11 @@ namespace Employees_Api.Controllers
       using (SqlConnection connection = new(con))
       {
         connection.Open();
-        using (SqlCommand cmd = new("ActualizarProducto", connection))
+        using (SqlCommand cmd = new("UpdateDepartment", connection))
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
-          cmd.Parameters.AddWithValue("@Id", id);
-          cmd.Parameters.AddWithValue("@Nombre", p.DepartmentName);
+          cmd.Parameters.AddWithValue("@DepartmentID", id);
+          cmd.Parameters.AddWithValue("@DepartmentName", p.DepartmentName);
           cmd.ExecuteNonQuery();
         }
       }
@@ -85,10 +84,10 @@ namespace Employees_Api.Controllers
       using (SqlConnection connection = new(con))
       {
         connection.Open();
-        using (SqlCommand cmd = new("EliminarProducto", connection))
+        using (SqlCommand cmd = new("DeleteDepartment", connection))
         {
           cmd.CommandType = System.Data.CommandType.StoredProcedure;
-          cmd.Parameters.AddWithValue("@Id", id);
+          cmd.Parameters.AddWithValue("@DepartmentID", id);
 
           cmd.ExecuteNonQuery();
         }

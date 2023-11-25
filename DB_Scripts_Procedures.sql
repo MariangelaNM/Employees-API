@@ -25,3 +25,24 @@ BEGIN
         THROW;
     END CATCH
 END
+
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Add the types Departments
+-- =============================================
+CREATE PROCEDURE [dbo].[PostDepartment]
+    @DepartmentName varchar(50)
+AS
+BEGIN
+    BEGIN TRY
+     INSERT INTO [dbo].[Departments]
+           ([DepartmentName])
+     VALUES
+           (@DepartmentName)
+    END TRY
+    BEGIN CATCH
+        -- Log or handle the error as needed
+        INSERT INTO ErrorLog (ErrorMessage, ErrorTime) VALUES (ERROR_MESSAGE(), GETDATE())
+        THROW;
+    END CATCH
+END
