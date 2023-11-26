@@ -186,7 +186,31 @@ BEGIN
     END CATCH
 END;
 go
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Delete a Department
+-- =============================================
+CREATE PROCEDURE [dbo].[GetDepartmentByID]
+    @DepartmentID INT
+AS
+BEGIN
+    BEGIN TRY
+        -- SELECT the department
+		SELECT [DepartmentID]
+			  ,[DepartmentName]
+		  FROM [EmployeesDB].[dbo].[Departments]
+        WHERE [DepartmentID] = @DepartmentID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
 
+        -- Re-throw the error for further handling
+        THROW;
+    END CATCH
+END
+go
 -- =============================================
 -- Author: Mariangela
 -- Purpose: Validate exist name or id Department
