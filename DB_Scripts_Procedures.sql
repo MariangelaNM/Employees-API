@@ -183,3 +183,33 @@ BEGIN
     END CATCH
 END;
 go
+
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Validate exist name or id Department
+-- =============================================
+Create PROCEDURE CheckDepartmentExists
+     @DepartmentName NVARCHAR(255) = NULL,
+     @DepartmentId INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Count INT
+
+    IF @DepartmentId IS NULL
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM Departments
+        WHERE DepartmentName = @DepartmentName;
+    END
+    ELSE
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM Departments
+        WHERE  @DepartmentId = DepartmentID;
+    END
+
+
+    SELECT @Count AS Result;
+END
