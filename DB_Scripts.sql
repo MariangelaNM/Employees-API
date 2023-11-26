@@ -19,7 +19,7 @@ IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Depar
 BEGIN
     CREATE TABLE Departments (
         DepartmentID INT PRIMARY KEY IDENTITY(1,1),
-        DepartmentName VARCHAR(50) NOT NULL
+        DepartmentName VARCHAR(50) Unique NOT NULL
     );
     PRINT 'Departments table created successfully.';
 END
@@ -40,6 +40,7 @@ IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Emplo
 BEGIN
     CREATE TABLE Employees (
         EmployeeID INT PRIMARY KEY IDENTITY(1,1),
+        EmployeeDNI INT Unique,
         EmployeeName VARCHAR(50) NOT NULL,
         EmployeeLastName VARCHAR(250) NOT NULL,
         DepartmentID INT,
@@ -70,14 +71,15 @@ END
 GO
 
 -- Insert sample data into the employees table
-INSERT INTO Employees (EmployeeName, EmployeeLastName, DepartmentID)
+INSERT INTO Employees (EmployeeDNI,EmployeeName, EmployeeLastName, DepartmentID)
 VALUES
-    ('Juan', 'Alvarado', 1),
-    ('Ana', 'Alvarado', 2);
+    (123,'Juan', 'Alvarado', 1),
+    (456,'Ana', 'Alvarado', 2);
 
 -- Example query to retrieve master-detail information
 SELECT
     e.EmployeeID,
+	e.EmployeeDNI,
     e.EmployeeName,
     e.EmployeeLastName,
     d.DepartmentID,

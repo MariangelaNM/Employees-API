@@ -100,14 +100,15 @@ go
 -- Purpose: Add a new Employee
 -- =============================================
 CREATE PROCEDURE [dbo].[InsertEmployee]
+	@EmployeeDNI int,
     @EmployeeName VARCHAR(50),
     @EmployeeLastName VARCHAR(250),
     @DepartmentID INT
 AS
 BEGIN
     BEGIN TRY
-        INSERT INTO [dbo].[Employees] (EmployeeName, EmployeeLastName, DepartmentID)
-        VALUES (@EmployeeName, @EmployeeLastName, @DepartmentID);
+        INSERT INTO [dbo].[Employees] (EmployeeDNI,EmployeeName, EmployeeLastName, DepartmentID)
+        VALUES (@EmployeeDNI,@EmployeeName, @EmployeeLastName, @DepartmentID);
     END TRY
     BEGIN CATCH
         -- Log the error in the ErrorLog table
@@ -143,6 +144,7 @@ go
 -- =============================================
 CREATE PROCEDURE [dbo].[UpdateEmployee]
     @EmployeeID INT,
+	@EmployeeDNI int,
     @EmployeeName VARCHAR(50),
     @EmployeeLastName VARCHAR(250),
     @DepartmentID INT
@@ -151,6 +153,7 @@ BEGIN
     BEGIN TRY
         UPDATE [dbo].[Employees]
         SET [EmployeeName] = @EmployeeName,
+		    EmployeeDNI =@EmployeeDNI,
             [EmployeeLastName] = @EmployeeLastName,
             [DepartmentID] = @DepartmentID
         WHERE [EmployeeID] = @EmployeeID;
@@ -173,7 +176,7 @@ AS
 BEGIN
     BEGIN TRY
         DELETE FROM [dbo].[Employees]
-        WHERE [EmployeeID] = @EmployeeID;
+        WHERE [EmployeeDNI] = @EmployeeID;
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
@@ -208,6 +211,36 @@ BEGIN
         SELECT @Count = COUNT(*)
         FROM Departments
         WHERE  @DepartmentId = DepartmentID;
+    END
+
+
+    SELECT @Count AS Result;
+END
+go
+-- =============================================
+-- Author: Mariangela
+-- Purpose: Validate exist DNI
+-- =============================================
+Create PROCEDURE CheckEmployeeExists
+     @EmployeeDNI INT = NULL,
+     @EmployeeID INT = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @Count INT
+
+    IF @EmployeeDNI IS NULL
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM [Employees]
+        WHERE EmployeeDNI = @EmployeeDNI;
+    END
+    ELSE
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM [Employees]
+        WHERE  @EmployeeID = EmployeeID;
     END
 
 

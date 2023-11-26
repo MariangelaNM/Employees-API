@@ -15,34 +15,46 @@ namespace Employees_Api.Controllers
     }
 
     [HttpGet]
-    public IEnumerable<Department> Get()
+    public IActionResult Get()
     {
       List<Department> Departments = new();
 
-      using (SqlConnection connection = new(con))
+      try
       {
-        connection.Open();
-        using (SqlCommand cmd = new("GetDepartments", connection))
+        using (SqlConnection connection = new SqlConnection(con))
         {
-          cmd.CommandType = System.Data.CommandType.StoredProcedure;
-          using (SqlDataReader reader = cmd.ExecuteReader())
+          connection.Open();
+          using (SqlCommand cmd = new SqlCommand("GetDepartments", connection))
           {
-            while (reader.Read())
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            using (SqlDataReader reader = cmd.ExecuteReader())
             {
-              Department p = new Department
+              while (reader.Read())
               {
-                DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-                DepartmentName = reader["DepartmentName"].ToString(),
+                Department p = new Department
+                {
+                  DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                  DepartmentName = reader["DepartmentName"].ToString(),
+                };
 
-              };
-
-              Departments.Add(p);
+                Departments.Add(p);
+              }
             }
           }
         }
+
+        return Ok(Departments); // 200 OK
       }
-      return Departments;
+      catch (Exception ex)
+      {
+        // Log the exception for debugging purposes
+        Console.WriteLine($"An error occurred: {ex.Message}");
+
+        // Return a 500 Internal Server Error with a meaningful error message
+        return StatusCode(500, "Internal Server Error");
+      }
     }
+
 
     [HttpPost]
     public IActionResult Post([FromBody] Department department)
@@ -146,7 +158,7 @@ namespace Employees_Api.Controllers
     }
 
     // Method to check if an employee name already exists
-    private bool DepartmentExists(string name, int? id = null)
+    private bool DepartmentExists(string? name = null, int? id = null)
     {
       using (SqlConnection connection = new SqlConnection(con))
       {
