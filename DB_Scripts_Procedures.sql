@@ -198,13 +198,10 @@ alter PROCEDURE [dbo].[GetEmployeeByID]
 AS
 BEGIN
     BEGIN TRY
-		SELECT  [EmployeeID]
-		  ,[EmployeeDNI]
-		  ,[EmployeeName]
-		  ,[EmployeeLastName]
-		  ,[DepartmentID]
-		FROM [EmployeesDB].[dbo].[Employees]
-        WHERE [EmployeeID] = @EmployeeID;
+	SELECT        Employees.EmployeeID, Employees.EmployeeDNI, Employees.EmployeeName, Employees.EmployeeLastName, Departments.DepartmentID, Departments.DepartmentName
+	FROM            Employees INNER JOIN
+							 Departments ON Employees.DepartmentID = Departments.DepartmentID
+    WHERE [EmployeeID] = @EmployeeID;
     END TRY
     BEGIN CATCH
         -- Log the error in the ErrorLog table
@@ -276,7 +273,7 @@ go
 -- Author: Mariangela
 -- Purpose: Validate exist DNI
 -- =============================================
-Create PROCEDURE CheckEmployeeExists
+alter PROCEDURE CheckEmployeeExists
      @EmployeeDNI INT = NULL,
      @EmployeeID INT = NULL
 AS
@@ -284,8 +281,14 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Count INT
+	IF @EmployeeDNI IS not NULL and @EmployeeID IS not NULL 
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM [Employees]
+        WHERE @EmployeeID != EmployeeID and @EmployeeID=EmployeeDNI;
+    END
 
-    IF @EmployeeDNI IS NULL
+    ELse IF @EmployeeDNI IS not NULL
     BEGIN
         SELECT @Count = COUNT(*)
         FROM [Employees]

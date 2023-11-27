@@ -84,8 +84,9 @@ namespace Employees_Api.Controllers
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.AddWithValue("@EmployeeName", employee.EmployeeName);
                         cmd.Parameters.AddWithValue("@EmployeeLastName", employee.EmployeeLastName);
-                        cmd.Parameters.AddWithValue("@DepartmentID", employee.DepartmentID);
+                        cmd.Parameters.AddWithValue("@DepartmentID", employee.Department.DepartmentID);
                         cmd.Parameters.AddWithValue("@EmployeeDNI", employee.EmployeeDNI);
+
                         await cmd.ExecuteNonQueryAsync();
                     }
                 }
@@ -104,7 +105,7 @@ namespace Employees_Api.Controllers
         {
             try
             {
-                if (!await EmployeeExistsAsync(p.EmployeeDNI, null))
+                if (await EmployeeExistsAsync(p.EmployeeDNI, id))
                 {
                     ModelState.AddModelError("EmployeeDNI", "Employee with this DNI does not exist.");
                     return BadRequest(ModelState);
@@ -119,9 +120,10 @@ namespace Employees_Api.Controllers
                         {
                             cmd.CommandType = System.Data.CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@EmployeeID", id);
+                            cmd.Parameters.AddWithValue("@EmployeeDNI", p.EmployeeDNI);
                             cmd.Parameters.AddWithValue("@EmployeeName", p.EmployeeName);
                             cmd.Parameters.AddWithValue("@EmployeeLastName", p.EmployeeLastName);
-                            cmd.Parameters.AddWithValue("@DepartmentID", p.DepartmentID);
+                            cmd.Parameters.AddWithValue("@DepartmentID", p.Department.DepartmentID);
                             await cmd.ExecuteNonQueryAsync();
                         }
 
@@ -200,7 +202,7 @@ namespace Employees_Api.Controllers
         {
             try
             {
-                if (await EmployeeExistsAsync(id, null))
+                if (await EmployeeExistsAsync( null, id))
                 {
                     using (var connection = new SqlConnection(_connectionString))
                     {
