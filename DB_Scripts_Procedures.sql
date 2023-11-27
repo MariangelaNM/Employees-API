@@ -243,7 +243,7 @@ go
 -- Author: Mariangela
 -- Purpose: Validate exist name or id Department
 -- =============================================
-Create PROCEDURE CheckDepartmentExists
+CREATE PROCEDURE CheckDepartmentExists
      @DepartmentName NVARCHAR(255) = NULL,
      @DepartmentId INT = NULL
 AS
@@ -251,8 +251,13 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Count INT
-
-    IF @DepartmentId IS NULL
+    IF @DepartmentId IS not NULL and @DepartmentName IS not NULL
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM Departments
+        WHERE DepartmentName = @DepartmentName and DepartmentID!=@DepartmentId;
+    END
+    Else IF @DepartmentId IS NULL
     BEGIN
         SELECT @Count = COUNT(*)
         FROM Departments
@@ -273,7 +278,7 @@ go
 -- Author: Mariangela
 -- Purpose: Validate exist DNI
 -- =============================================
-alter PROCEDURE CheckEmployeeExists
+CREATE PROCEDURE CheckEmployeeExists
      @EmployeeDNI INT = NULL,
      @EmployeeID INT = NULL
 AS

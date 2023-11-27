@@ -135,7 +135,7 @@ namespace Employees_Api.Controllers
         public IActionResult Put([FromBody] Department p, int id)
         {
             // Check if the department with the given ID exists before updating
-            if (!DepartmentExists(p.DepartmentName, null))
+            if (!DepartmentExists(p.DepartmentName, id))
 
                 if (DepartmentExists(null, id))
                 {
