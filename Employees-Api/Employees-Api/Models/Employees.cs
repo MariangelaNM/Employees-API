@@ -7,5 +7,6 @@
     public required string EmployeeName { get; set; }
     public required string EmployeeLastName { get; set; }
     public int DepartmentID { get; set; }
-  }
+    public Department Department { get; set; }
+    }
 }

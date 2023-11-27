@@ -1,12 +1,6 @@
 ﻿using Employees_Api.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace Employees_Api.Controllers
 {
@@ -48,7 +42,11 @@ namespace Employees_Api.Controllers
                                     EmployeeDNI = Convert.ToInt32(reader["EmployeeDNI"]),
                                     EmployeeName = reader["EmployeeName"].ToString(),
                                     EmployeeLastName = reader["EmployeeLastName"].ToString(),
-                                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                    Department = new Department
+                                    {
+                                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                        DepartmentName = reader["DepartmentName"].ToString(),
+                                    }
                                 };
 
                                 employees.Add(employee);
@@ -167,7 +165,12 @@ namespace Employees_Api.Controllers
                                     EmployeeDNI = Convert.ToInt32(reader["EmployeeDNI"]),
                                     EmployeeName = reader["EmployeeName"].ToString(),
                                     EmployeeLastName = reader["EmployeeLastName"].ToString(),
-                                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                    Department = new Department
+                                    {
+                                        DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                        DepartmentName = reader["DepartmentName"].ToString(),
+                                    }
+
                                 };
 
                                 return Ok(departmentID); // 200 OK with the specific Employee

@@ -128,7 +128,9 @@ CREATE PROCEDURE [dbo].[GetEmployees]
 AS
 BEGIN
     BEGIN TRY
-        SELECT * FROM [dbo].[Employees];
+	SELECT        Employees.EmployeeID, Employees.EmployeeDNI, Employees.EmployeeName, Employees.EmployeeLastName, Departments.DepartmentID, Departments.DepartmentName
+	FROM            Employees INNER JOIN
+							 Departments ON Employees.DepartmentID = Departments.DepartmentID
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
@@ -176,7 +178,7 @@ AS
 BEGIN
     BEGIN TRY
         DELETE FROM [dbo].[Employees]
-        WHERE [EmployeeDNI] = @EmployeeID;
+        WHERE [EmployeeID] = @EmployeeID;
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
@@ -186,9 +188,38 @@ BEGIN
     END CATCH
 END;
 go
+
 -- =============================================
 -- Author: Mariangela
--- Purpose: Delete a Department
+-- Purpose: get a Employee
+-- =============================================
+alter PROCEDURE [dbo].[GetEmployeeByID]
+    @EmployeeID INT
+AS
+BEGIN
+    BEGIN TRY
+		SELECT  [EmployeeID]
+		  ,[EmployeeDNI]
+		  ,[EmployeeName]
+		  ,[EmployeeLastName]
+		  ,[DepartmentID]
+		FROM [EmployeesDB].[dbo].[Employees]
+        WHERE [EmployeeID] = @EmployeeID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
+
+        -- Re-throw the error for further handling
+        THROW;
+    END CATCH
+END
+go
+
+-- =============================================
+-- Author: Mariangela
+-- Purpose: get a Department
 -- =============================================
 CREATE PROCEDURE [dbo].[GetDepartmentByID]
     @DepartmentID INT
