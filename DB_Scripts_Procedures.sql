@@ -128,7 +128,9 @@ CREATE PROCEDURE [dbo].[GetEmployees]
 AS
 BEGIN
     BEGIN TRY
-        SELECT * FROM [dbo].[Employees];
+	SELECT        Employees.EmployeeID, Employees.EmployeeDNI, Employees.EmployeeName, Employees.EmployeeLastName, Departments.DepartmentID, Departments.DepartmentName
+	FROM            Employees INNER JOIN
+							 Departments ON Employees.DepartmentID = Departments.DepartmentID
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
@@ -176,7 +178,7 @@ AS
 BEGIN
     BEGIN TRY
         DELETE FROM [dbo].[Employees]
-        WHERE [EmployeeDNI] = @EmployeeID;
+        WHERE [EmployeeID] = @EmployeeID;
     END TRY
     BEGIN CATCH
         -- Log or handle the error as needed
@@ -189,9 +191,59 @@ go
 
 -- =============================================
 -- Author: Mariangela
+-- Purpose: get a Employee
+-- =============================================
+alter PROCEDURE [dbo].[GetEmployeeByID]
+    @EmployeeID INT
+AS
+BEGIN
+    BEGIN TRY
+	SELECT        Employees.EmployeeID, Employees.EmployeeDNI, Employees.EmployeeName, Employees.EmployeeLastName, Departments.DepartmentID, Departments.DepartmentName
+	FROM            Employees INNER JOIN
+							 Departments ON Employees.DepartmentID = Departments.DepartmentID
+    WHERE [EmployeeID] = @EmployeeID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
+
+        -- Re-throw the error for further handling
+        THROW;
+    END CATCH
+END
+go
+
+-- =============================================
+-- Author: Mariangela
+-- Purpose: get a Department
+-- =============================================
+CREATE PROCEDURE [dbo].[GetDepartmentByID]
+    @DepartmentID INT
+AS
+BEGIN
+    BEGIN TRY
+        -- SELECT the department
+		SELECT [DepartmentID]
+			  ,[DepartmentName]
+		  FROM [EmployeesDB].[dbo].[Departments]
+        WHERE [DepartmentID] = @DepartmentID;
+    END TRY
+    BEGIN CATCH
+        -- Log the error in the ErrorLog table
+        INSERT INTO [dbo].[ErrorLog] ([ErrorMessage], [ErrorTime])
+        VALUES (ERROR_MESSAGE(), GETDATE());
+
+        -- Re-throw the error for further handling
+        THROW;
+    END CATCH
+END
+go
+-- =============================================
+-- Author: Mariangela
 -- Purpose: Validate exist name or id Department
 -- =============================================
-Create PROCEDURE CheckDepartmentExists
+CREATE PROCEDURE CheckDepartmentExists
      @DepartmentName NVARCHAR(255) = NULL,
      @DepartmentId INT = NULL
 AS
@@ -199,8 +251,13 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Count INT
-
-    IF @DepartmentId IS NULL
+    IF @DepartmentId IS not NULL and @DepartmentName IS not NULL
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM Departments
+        WHERE DepartmentName = @DepartmentName and DepartmentID!=@DepartmentId;
+    END
+    Else IF @DepartmentId IS NULL
     BEGIN
         SELECT @Count = COUNT(*)
         FROM Departments
@@ -221,7 +278,7 @@ go
 -- Author: Mariangela
 -- Purpose: Validate exist DNI
 -- =============================================
-Create PROCEDURE CheckEmployeeExists
+CREATE PROCEDURE CheckEmployeeExists
      @EmployeeDNI INT = NULL,
      @EmployeeID INT = NULL
 AS
@@ -229,8 +286,14 @@ BEGIN
     SET NOCOUNT ON;
 
     DECLARE @Count INT
+	IF @EmployeeDNI IS not NULL and @EmployeeID IS not NULL 
+    BEGIN
+        SELECT @Count = COUNT(*)
+        FROM [Employees]
+        WHERE @EmployeeID != EmployeeID and @EmployeeID=EmployeeDNI;
+    END
 
-    IF @EmployeeDNI IS NULL
+    ELse IF @EmployeeDNI IS not NULL
     BEGIN
         SELECT @Count = COUNT(*)
         FROM [Employees]
