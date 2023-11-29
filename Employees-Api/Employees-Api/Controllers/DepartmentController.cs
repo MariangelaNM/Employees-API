@@ -232,7 +232,7 @@ namespace Employees_Api.Controllers
 						else
 						{
 							// If id is null, set it to DBNull.Value
-							cmd.Parameters.AddWithValue("@DepartmentId", DBNull.Value);
+							cmd.Parameters.AddWithValue("@DepartmentId",null);
 						}
 
 						// Use ExecuteScalar safely by checking for DBNull.Value
