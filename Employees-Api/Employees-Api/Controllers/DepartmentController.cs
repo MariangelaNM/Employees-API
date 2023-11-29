@@ -239,6 +239,7 @@ namespace Employees_Api.Controllers
 						object result = cmd.ExecuteScalar();
 						return result != null && Convert.ToBoolean(result);
 					}
+
 				}
 			}
 
