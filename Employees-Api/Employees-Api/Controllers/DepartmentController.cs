@@ -14,93 +14,97 @@ namespace Employees_Api.Controllers
 			con = configuration["ConnectionStrings:conexion"];
 		}
 
-		[HttpGet]
-		public IActionResult Get()
-		{
-			List<Department> Departments = new();
+        [HttpGet]
+        public IActionResult Get()
+        {
+            List<Department> Departments = new();
 
-			try
-			{
-				using (SqlConnection connection = new SqlConnection(con))
-				{
-					connection.Open();
-					using (SqlCommand cmd = new SqlCommand("GetDepartments", connection))
-					{
-						cmd.CommandType = System.Data.CommandType.StoredProcedure;
-						using (SqlDataReader reader = cmd.ExecuteReader())
-						{
-							while (reader.Read())
-							{
-								Department p = new Department
-								{
-									DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-									DepartmentName = reader["DepartmentName"].ToString(),
-								};
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(con))
+                {
+                    connection.Open();
+                    string query = "SELECT [DepartmentID], [DepartmentName]     FROM [EmployeesDB].[dbo].[Departments]";
 
-								Departments.Add(p);
-							}
-						}
-					}
-				}
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Department p = new Department
+                                {
+                                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                    DepartmentName = reader["DepartmentName"].ToString(),
+                                };
 
-				return Ok(Departments); // 200 OK
-			}
-			catch (Exception ex)
-			{
-				// Log the exception for debugging purposes
-				Console.WriteLine($"An error occurred: {ex.Message}");
+                                Departments.Add(p);
+                            }
+                        }
+                    }
+                }
 
-				// Return a 500 Internal Server Error with a meaningful error message
-				return StatusCode(500, "Internal Server Error");
-			}
-		}
+                return Ok(Departments); // 200 OK
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine($"An error occurred: {ex.Message}");
 
-		[HttpGet("{id}")]
-		public IActionResult Get(int id)
-		{
-			try
-			{
-				using (SqlConnection connection = new SqlConnection(con))
-				{
-					connection.Open();
-					using (SqlCommand cmd = new SqlCommand("GetDepartmentById", connection))
-					{
-						cmd.CommandType = System.Data.CommandType.StoredProcedure;
-						cmd.Parameters.AddWithValue("@DepartmentID", id);
-
-						using (SqlDataReader reader = cmd.ExecuteReader())
-						{
-							if (reader.Read())
-							{
-								Department department = new Department
-								{
-									DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
-									DepartmentName = reader["DepartmentName"].ToString(),
-								};
-
-								return Ok(department); // 200 OK with the specific department
-							}
-							else
-							{
-								// Return a 404 Not Found if the department with the specified id is not found
-								return NotFound("Department not found");
-							}
-						}
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				// Log the exception for debugging purposes
-				Console.WriteLine($"An error occurred: {ex.Message}");
-
-				// Return a 500 Internal Server Error with a meaningful error message
-				return StatusCode(500, "Internal Server Error");
-			}
-		}
+                // Return a 500 Internal Server Error with a meaningful error message
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
 
-		[HttpPost]
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(con))
+                {
+                    connection.Open();
+                    string query = "SELECT [DepartmentID], [DepartmentName]  FROM [EmployeesDB].[dbo].[Departments] WHERE DepartmentID = @DepartmentID";
+
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@DepartmentID", id);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                Department department = new Department
+                                {
+                                    DepartmentID = Convert.ToInt32(reader["DepartmentID"]),
+                                    DepartmentName = reader["DepartmentName"].ToString(),
+                                };
+
+                                return Ok(department); // 200 OK with the specific department
+                            }
+                            else
+                            {
+                                // Return a 404 Not Found if the department with the specified id is not found
+                                return NotFound("Department not found");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging purposes
+                Console.WriteLine($"An error occurred: {ex.Message}");
+
+                // Return a 500 Internal Server Error with a meaningful error message
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
+
+
+
+        [HttpPost]
 		public IActionResult Post([FromBody] Department department)
 		{
 			// Check if the department name already exists
